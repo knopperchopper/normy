@@ -69,7 +69,7 @@ module.exports = function(opts){
         }
  		// Force Trailing Slash Keep
         if(opts.forceTrailingSlash === "keep"){
-            if(urlPath.substr(-1) != '/' && !/.([\w]{2,4})(\?|$)/.test(urlPath)){ 
+            if(urlPath.substr(-1) != '/' && !/\w+\.([A-Za-z0-9]{3,4})(?=\?|$)/.test(urlPath)){ 
                 redirectRequired = true; 
                 urlPath = urlPath + "/";
             }
@@ -125,11 +125,11 @@ module.exports = function(opts){
 function SetupOptions(opts){
     // Check to see if each option has been configured, if not use default
     opts.forceProtocol = (opts.forceProtocol === undefined ? defaults.forceProtocol : opts.forceProtocol);
-    opts.forceWww = opts.forceWww || defaults.forceWww;
-    opts.forceTrailingSlash = opts.forceTrailingSlash || defaults.forceTrailingSlash;
-    opts.forceCase = opts.forceCase || defaults.forceCase;
-    opts.forceCaseQuery = opts.forceCaseQuery || defaults.forceCaseQuery;
-    opts.redirectType = opts.redirectType || defaults.redirectType;
+    opts.forceWww = (opts.forceWww === undefined ? defaults.forceWww : opts.forceWww);
+    opts.forceTrailingSlash = (opts.forceTrailingSlash === undefined ? defaults.forceTrailingSlash : opts.forceTrailingSlash);
+    opts.forceCase = (opts.forceCase === undefined ? defaults.forceCase : opts.forceCase);
+    opts.forceCaseQuery = (opts.forceCaseQuery === undefined ? defaults.forceCaseQuery : opts.forceCaseQuery);
+    opts.redirectType = (opts.redirectType === undefined ? defaults.redirectType : opts.redirectType);
     
     // Validate options against schema
     v.validate(opts, optionsSchema, {throwError: true});

@@ -4,6 +4,7 @@ Normy is a URL normalization middleware for Express.
 ## Usage
 
 ```javascript
+
     var app = require('express');
     var normy = require('normy');
     
