@@ -3,8 +3,92 @@ var request = require('supertest');
 var express = require('express');
 var normy = require('./');
 
+describe('Force Protocol', function(){
+    
+    it('redirects to a https host name when request is not https AND "https" option is configured', function(done){
+        var app = express();
+        
+        var options = {
+            forceProtocol: "https"
+        }
+        
+        app.use(normy(options));
+
+        var appTest = createVhostTester(app, 'www.example.com');
+        var expected = "https://www.example.com/";
+        
+        appTest
+            .get('/')
+            .expect(301)
+            .expect(function(res){ 
+                if(res.headers['location'] !== expected){ 
+                    throw new Error("Expected location: " + expected + " Received: " +  res.headers['location']); 
+                } 
+            }) 
+            .end(function(err, res) {
+                if (err) return done(err);
+                done();
+            });
+            
+    });
+    
+    it('redirects to a http host name when request is not http AND "http" option is configured', function(done){
+        var app = express();
+        
+        var options = {
+            forceProtocol: "http"
+        }
+        
+        app.use(normy(options));
+
+        var appTest = createVhostTester(app, 'www.example.com');
+        var expected = "http://www.example.com/";
+        
+        appTest
+            .get('https://www.example.com/')
+            .expect(301)
+            .expect(function(res){ 
+                if(res.headers['location'] !== expected){ 
+                    throw new Error("Expected location: " + expected + " Received: " +  res.headers['location']); 
+                } 
+            }) 
+            .end(function(err, res) {
+                if (err) return done(err);
+                done();
+            });
+            
+    });
+    
+    it('does not redirect when configured with the "none" option regardless of protocol', function(done){
+        var app = express();
+        
+        var options = {
+            forceProtocol: "none"
+        }
+        
+        app.use(normy(options));
+        app.get('/path', function(req, res){
+            res.send("Success");
+        });
+
+        var appTest = createVhostTester(app, 'www.example.com');
+        
+        appTest
+            .get('/path')
+            .expect(200)
+            .end(function(err, res) {
+                if (err) return done(err);
+                done();
+            });
+            
+    });
+    
+});
+
+
 describe('Force WWW Hostname', function(){
-    it('redirects to a www host name when it is missing', function(done){
+    
+    it('redirects to a www host name when it is missing AND "www" option is configured', function(done){
         var app = express();
         
         var options = {
@@ -31,7 +115,7 @@ describe('Force WWW Hostname', function(){
             
     });
     
-    it('redirects to a host name without www', function(done){
+    it('redirects to a host name without www when it is present AND "no-www" option is configured', function(done){
         var app = express();
         
         var options = {
@@ -86,6 +170,7 @@ describe('Force WWW Hostname', function(){
 
 
 describe('Force Trailing Slash in Path', function(){
+    
     it('redirects to a URL without a trailing forward slash when configured with "trim" option', function(done){
         var app = express();
         
@@ -353,6 +438,63 @@ describe('Force Query String Case', function(){
             
     });
     
+});
+
+describe('Redirect Types', function(){
+
+    it('redirects using a 301 status code when "301" option configured', function(done){
+        var app = express();
+        
+        var options = {
+            redirectType: "301"
+        }
+        
+        app.use(normy(options));
+
+        var appTest = createVhostTester(app, 'example.com');
+        var expected = "http://www.example.com/";
+        
+        appTest
+            .get('/')
+            .expect(301)
+            .expect(function(res){ 
+                if(res.headers['location'] !== expected){ 
+                    throw new Error("Expected location: " + expected + " Received: " +  res.headers['location']); 
+                } 
+            }) 
+            .end(function(err, res) {
+                if (err) return done(err);
+                done();
+            });
+            
+    });
+    
+    it('redirects using a 302 status code when "302" option configured', function(done){
+        var app = express();
+        
+        var options = {
+            redirectType: "302"
+        }
+        
+        app.use(normy(options));
+
+        var appTest = createVhostTester(app, 'example.com');
+        var expected = "http://www.example.com/";
+        
+        appTest
+            .get('/')
+            .expect(302)
+            .expect(function(res){ 
+                if(res.headers['location'] !== expected){ 
+                    throw new Error("Expected location: " + expected + " Received: " +  res.headers['location']); 
+                } 
+            }) 
+            .end(function(err, res) {
+                if (err) return done(err);
+                done();
+            });
+            
+    });
 });
 
  // This will create a virtual hostname that unit tests can leverage when needed 
