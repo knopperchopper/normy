@@ -1,5 +1,4 @@
 var Validator = require('jsonschema').Validator;
-var v = new Validator();
 
 
 // Define Options schema for validation
@@ -28,55 +27,124 @@ var optionsSchema = {
     }
 }
 
-// Add schema to validator
+// Add options schema to validator
+var v = new Validator();
 v.addSchema(optionsSchema, '/Options');
 
 
-
+// Init default options
 var defaults = {
-    forceProtocol: "none",              // Options: http, https, none
-    forceWww: 'www',                    // Options: www, no-www, none
-    forceTrailingSlash: 'trim',         // Options: trim, keep, none
-    forceCase: 'lower',                 // Options: lower, upper, none
-    forceCaseQuery: 'none',             // Options: lower, upper, none
-    redirectType: "301"                 // Options: 301, 302
+    forceProtocol: "none",
+    forceWww: "www",
+    forceTrailingSlash: "trim",
+    forceCase: "lower",
+    forceCaseQuery: "none",
+    redirectType: "301"
 }
 
 
 module.exports = function(opts){
     
-    // Handle Options: If option is not passed, use default
-    opts.forceProtocol = opts.forceProtocol || defaults.forceProtocol;
-    opts.forceWww = opts.forceWww || defaults.forceWww;
-    opts.forceTrailingSlash = opts.forceTrailingSlash || defaults.forceTrailingSlash;
-    opts.forceCase = opts.forceCase || defaults.forceCase;
-    opts.forceProtocol = opts.forceCaseQuery || defaults.forceCaseQuery;
-    opts.forceProtocol = opts.redirectType || defaults.redirectType;
-    
+    // Setup Options: if undefined, use defaults, otherwise pass to option handler
+    opts = (opts === undefined ? defaults : SetupOptions(opts));
     
     return function(req, res, next){
+        // Break down request URL into components
         var urlProtocol = req.protocol; 
         var urlHost = req.headers.host; 
         var urlPath = req.originalUrl.split('?')[0]; 
         var urlQueryString = (req.originalUrl.split('?')[1] === undefined ? "" : "?" + req.originalUrl.split('?')[1]); 
         var redirectRequired = false; 
+        var statusCode = parseInt(opts.redirectType);
 
         
-        // Force Lowercase Path 
-        if(opts.forceCase !== undefined){
-            
-            if (/[A-Z]/.test(urlPath)) { 
+ 		// Force HTTP
+        if(opts.forceProtocol === "http"){
+            if(urlProtocol != "http"){
+                redirectRequired = true;
+                urlProtocol = "http";
+            }
+        }
+        // FORCE HTTPS
+        else if(opts.forceProtocol === "https"){
+            if(urlProtocol != "https"){
+                redirectRequired = true;
+                urlProtocol = "https";
+            }
+        }
+        
+ 		// Force WWW 
+        if(opts.forceWww === "www"){
+            var testHost = urlHost.toLowerCase(); // Let's force lower case to make sure we match.
+            if (testHost.indexOf("www.") === -1){
+                redirectRequired = true;
+                urlHost = "www." + urlHost;
+            } 
+        }
+        // Force Remove WWW
+        else if(opts.forceWww === "no-www"){
+            var testHost = urlHost.toLowerCase(); // Let's force lower case to make sure we match.
+            if (testHost.indexOf("www.") === 0){
+                redirectRequired = true;
+                urlHost = urlHost.slice("www.".length); 
+            } 
+        }
+
+        
+ 		// Force Trailing Slash Removal
+        if(opts.forceTrailingSlash === "trim"){
+            if(urlPath.substr(-1) == '/' && urlPath.length > 1){ 
                 redirectRequired = true; 
+                urlPath = urlPath.slice(0, -1); 
+            }
+        }
+ 		// Force Trailing Slash Keep
+        if(opts.forceTrailingSlash === "keep"){
+            if(urlPath.substr(-1) != '/' && !/.([\w]{2,4})(\?|$)/.test(urlPath)){ 
+                redirectRequired = true; 
+                urlPath = urlPath + "/";
+            }
+        }
+
+        
+        // Force Lowercase
+        if(opts.forceCase === "lower"){
+            if (/[A-Z]/.test(urlProtocol) || /[A-Z]/.test(urlHost) || /[A-Z]/.test(urlPath)) { 
+                redirectRequired = true;
+                urlProtocol = urlProtocol.toLowerCase(); 
+                urlHost = urlHost.toLowerCase();   
                 urlPath = urlPath.toLowerCase(); 
             } 
         }
-        else{
-            
+        // Force Uppercase
+        else if(opts.forceCase === "upper"){
+            if (/[a-z]/.test(urlProtocol) || /[a-z]/.test(urlHost) || /[a-z]/.test(urlPath)){
+                redirectRequired = true; 
+                urlProtocol = urlProtocol.toUpperCase(); 
+                urlHost = urlHost.toUpperCase();   
+                urlPath = urlPath.toUpperCase(); 
+            }
         }
         
- 		// Redirect if Needed 
- 		if(redirectRequired){ 
- 			res.redirect(301, urlProtocol + "://" + urlHost + urlPath + urlQueryString); 
+        // Force Lowercase Query String
+        if(opts.forceCaseQuery === "lower"){
+            if (/[A-Z]/.test(urlQueryString)) { 
+                redirectRequired = true;
+                urlQueryString = urlQueryString.toLowerCase(); 
+            } 
+        }
+        // Force Uppercase Query String
+        else if(opts.forceCaseQuery === "upper"){
+            if (/[a-z]/.test(urlQueryString)){
+                redirectRequired = true; 
+                urlQueryString = urlQueryString.toUpperCase(); 
+            }
+        }
+        
+ 		// Compile URL and redirect if needed 
+ 		if(redirectRequired){
+            var compiledUrl = urlProtocol + "://" + urlHost + urlPath + urlQueryString;
+ 			res.redirect(statusCode, compiledUrl); 
  		} 
  		else{ 
  			return next(); 
@@ -85,8 +153,8 @@ module.exports = function(opts){
     }
 }
 
-function HandleOptions(opts){
-    opts.forceProtocol = opts.forceProtocol || defaults.forceProtocol;
+function SetupOptions(opts){
+    opts.forceProtocol = (opts.forceProtocol === undefined ? defaults.forceProtocol : opts.forceProtocol);
     opts.forceWww = opts.forceWww || defaults.forceWww;
     opts.forceTrailingSlash = opts.forceTrailingSlash || defaults.forceTrailingSlash;
     opts.forceCase = opts.forceCase || defaults.forceCase;
@@ -97,5 +165,3 @@ function HandleOptions(opts){
     
     return opts;
 }
-
-console.log(HandleOptions({forceWww: "no-www"}));
