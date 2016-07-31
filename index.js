@@ -1,37 +1,5 @@
 var Validator = require('jsonschema').Validator;
 
-
-// Define Options schema for validation
-var optionsSchema = {
-    "id": "/Options",
-    "type": "object:",
-    "properties": {
-        "forceProtocol": {
-            "enum": ["http", "https", "none"]
-        },
-        "forceWww": {
-            "enum": ["www", "no-www", "none"]
-        },
-        "forceTrailingSlash": {
-            "enum": ["trim", "keep", "none"]
-        },
-        "forceCase": {
-            "enum": ["lower", "upper", "none"]
-        },
-        "forceCaseQuery": {
-            "enum": ["lower", "upper", "none"]
-        },
-        "redirectType": {
-            "enum": ["301", "302"]
-        },
-    }
-}
-
-// Add options schema to validator
-var v = new Validator();
-v.addSchema(optionsSchema, '/Options');
-
-
 // Init default options
 var defaults = {
     forceProtocol: "none",
@@ -49,6 +17,7 @@ module.exports = function(opts){
     opts = (opts === undefined ? defaults : SetupOptions(opts));
     
     return function(req, res, next){
+        
         // Break down request URL into components
         var urlProtocol = req.protocol; 
         var urlHost = req.headers.host; 
@@ -154,6 +123,7 @@ module.exports = function(opts){
 }
 
 function SetupOptions(opts){
+    // Check to see if each option has been configured, if not use default
     opts.forceProtocol = (opts.forceProtocol === undefined ? defaults.forceProtocol : opts.forceProtocol);
     opts.forceWww = opts.forceWww || defaults.forceWww;
     opts.forceTrailingSlash = opts.forceTrailingSlash || defaults.forceTrailingSlash;
@@ -161,7 +131,38 @@ function SetupOptions(opts){
     opts.forceCaseQuery = opts.forceCaseQuery || defaults.forceCaseQuery;
     opts.redirectType = opts.redirectType || defaults.redirectType;
     
+    // Validate options against schema
     v.validate(opts, optionsSchema, {throwError: true});
     
     return opts;
 }
+
+// Define Options schema for validation
+var optionsSchema = {
+    "id": "/Options",
+    "type": "object:",
+    "properties": {
+        "forceProtocol": {
+            "enum": ["http", "https", "none"]
+        },
+        "forceWww": {
+            "enum": ["www", "no-www", "none"]
+        },
+        "forceTrailingSlash": {
+            "enum": ["trim", "keep", "none"]
+        },
+        "forceCase": {
+            "enum": ["lower", "upper", "none"]
+        },
+        "forceCaseQuery": {
+            "enum": ["lower", "upper", "none"]
+        },
+        "redirectType": {
+            "enum": ["301", "302"]
+        },
+    }
+}
+
+// Add options schema to validator
+var v = new Validator();
+v.addSchema(optionsSchema, '/Options');
