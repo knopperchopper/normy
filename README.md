@@ -48,6 +48,6 @@ npm install --save normy
 
 ```bash
 
-npm Test
+npm test
 
 ```

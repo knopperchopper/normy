@@ -1,7 +1,15 @@
 language: node_js
 node_js:
-  - "6"
-  - "5"
-  - "4"
-  - "0.12"
-  - "0.10"
+- '6'
+- '5'
+- '4'
+- '0.12'
+- '0.10'
+deploy:
+  on:
+    tags: true 
+    branch: master
+  api_key:
+    secure: aklMSXyeOBAaTZk5r/5BNn8YwY/EqC2sJ/WfuHrPJQpysGhsIEN8Kc0zyTe6B2U7mRvrX1hSK0FmRpdoMC8yZ39iFvvTlOUvbCqpBP6e3z6lwhtkj5XwZU62zcjDGGk+lMRUPZzLoLol8usE+ficU2F6byaT88D67zpNyTsPIjzS1a0jlm0arZ0sbi0LORTxPRly7Mz/xHphObCkrrfCybIHXxGjE7gyn300P9OlR5XUWzQGHw3UDluZXt/x+7kPVBpwbTn3MQVQdSx6SlTzUkGXJVyMDgc8kUNdI6d4FsFZMKfYr5TzF4s6sKLlcbxwlEsijBZUcs6kKpm82uzg1ls6nlaxs8xsbTZboN2bzUjDblht+OviwLz94Qbx1w6rss2QIibVCSeNo8YHbeXIcaMLFbAISHUfatAxV8d4CFmiF4SY1SXXptWC0Tf89QuG3qjLXS645eOpGg6C8c1IGPIBbRnOlPDRRk9dt5tl+fj9qQJ/lc3/ryBxRZcSbMTaVsFW+tHHndAI83hajIz9pHCePQb95MEhvnHdJthmGYCQpv8ctouSB+R4n1MW3GCq4W4skDh2d6f0GESGDvF5NHeFt1vVzqNrpAP0GINmMDVMpEuvKyH8vkdJERQq4j4t1kwOgOVW/Mt+boM/AVMjxJKH8FGl0vi0WEn9csW7eFY=
+email: ryan@ryanknopp.com
+provider: npm
