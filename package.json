@@ -1,6 +1,6 @@
 {
   "name": "normy",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Normy is a Node.js middleware that normalizes and redirects URLs for SEO purposes.",
   "main": "index.js",
   "scripts": {
