@@ -1,0 +1,11 @@
+{
+  "extends": "airbnb",
+  "globals": {
+    "describe": false,
+    "it": false,
+    "assert": false
+  },
+  "rules": {
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }]
+  }
+}
