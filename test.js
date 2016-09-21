@@ -1,9 +1,9 @@
-var assert = require('chai').assert;
-var request = require('supertest');
-var express = require('express');
-var normy = require('./');
+const assert = require('chai').assert;
+const request = require('supertest');
+const express = require('express');
+const normy = require('./');
 
-describe('Force Protocol', function(){
+describe('Force Protocol', function() {
     
     it('redirects to a https host name when request is not https AND "https" option is configured', function(done){
         var app = express();
