@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "pretest": "npm install",
-    "test": "mocha -R spec ./test.js"
+    "test": "mocha -R spec --use_strict ./test.js"
   },
   "keywords": [
     "url",

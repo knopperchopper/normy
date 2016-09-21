@@ -1,3 +1,7 @@
 module.exports = {
-    "extends": "airbnb"
+    "extends": "airbnb",
+    "globals": {
+        "describe": false,
+        "it": false
+    }
 }
