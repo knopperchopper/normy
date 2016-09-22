@@ -1,6 +1,6 @@
 # Normy
 Normy is a URL normalization middleware for Express.  The package will allow you to configure normalization rules and then universally 
-redirect any request that doesn't follow the rules.
+redirect any GET request that doesn't follow the rules.
 
 [![Build Status](https://travis-ci.org/knopperchopper/normy.svg?branch=master)](https://travis-ci.org/knopperchopper/normy)
 
@@ -16,19 +16,19 @@ npm install --save normy
 
 ```javascript
 
-    var app = require('express');
-    var normy = require('normy');
+    const app = require('express');
+    const normy = require('normy');
     
-    var options = {
-        forceProtocol: "none",
-        forceWww: "www",
-        forceTrailingSlash: "trim",
-        forceCase: "lower",
-        forceCaseQuery: "none",
-        redirectType: "301"    
+    const options = {
+      forceProtocol: "none",
+      forceWww: "www",
+      forceTrailingSlash: "trim",
+      forceCase: "lower",
+      forceCaseQuery: "none",
+      redirectType: "301"    
     }
     
-    app.use(normy(options));
+    app.get('*', normy(options));
 
 ```
 

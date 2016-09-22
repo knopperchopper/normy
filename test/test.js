@@ -12,7 +12,7 @@ describe('Force Protocol', () => {
         forceProtocol: 'https',
       };
 
-      app.use(normy(options));
+      app.get('*', normy(options));
 
       const appTest = vhost(app, 'www.example.com');
       const expected = 'https://www.example.com/';
@@ -39,7 +39,7 @@ describe('Force Protocol', () => {
         forceProtocol: 'none',
       };
 
-      app.use(normy(options));
+      app.get('*', normy(options));
       app.get('/path', (req, res) => {
         res.send('Success');
       });
@@ -66,7 +66,7 @@ describe('Force WWW Hostname', () => {
         forceWww: 'www',
       };
 
-      app.use(normy(options));
+      app.get('*', normy(options));
 
       const appTest = vhost(app, 'example.com');
       const expected = 'http://www.example.com/path';
@@ -93,7 +93,7 @@ describe('Force WWW Hostname', () => {
         forceWww: 'no-www',
       };
 
-      app.use(normy(options));
+      app.get('*', normy(options));
 
       const appTest = vhost(app, 'www.example.com');
       const expected = 'http://example.com/path';
@@ -120,7 +120,7 @@ describe('Force WWW Hostname', () => {
         forceWww: 'none',
       };
 
-      app.use(normy(options));
+      app.get('*', normy(options));
       app.get('/path', (req, res) => {
         res.send('Success');
       });
@@ -147,7 +147,7 @@ describe('Force Trailing Slash in Path', () => {
         forceTrailingSlash: 'trim',
       };
 
-      app.use(normy(options));
+      app.get('*', normy(options));
 
       const appTest = vhost(app, 'www.example.com');
       const expected = 'http://www.example.com/path';
@@ -174,7 +174,7 @@ describe('Force Trailing Slash in Path', () => {
         forceTrailingSlash: 'keep',
       };
 
-      app.use(normy(options));
+      app.get('*', normy(options));
 
       const appTest = vhost(app, 'www.example.com');
       const expected = 'http://www.example.com/path/';
@@ -201,7 +201,7 @@ describe('Force Trailing Slash in Path', () => {
         forceTrailingSlash: 'none',
       };
 
-      app.use(normy(options));
+      app.get('*', normy(options));
       app.get('/path', (req, res) => {
         res.send('Success');
       });
@@ -225,7 +225,7 @@ describe('Force Trailing Slash in Path', () => {
       forceTrailingSlash: 'keep',
     };
 
-    app.use(normy(options));
+    app.get('*', normy(options));
     app.get('/path.html', (req, res) => {
       res.send('Success');
     });
@@ -252,7 +252,7 @@ describe('Force URL Case', () => {
         forceCase: 'lower',
       };
 
-      app.use(normy(options));
+      app.get('*', normy(options));
 
       const appTest = vhost(app, 'WWW.Example.COM');
       const expected = 'http://www.example.com/upper';
@@ -279,7 +279,7 @@ describe('Force URL Case', () => {
         forceCase: 'upper',
       };
 
-      app.use(normy(options));
+      app.get('*', normy(options));
 
       const appTest = vhost(app, 'www.Example.com');
       const expected = 'HTTP://WWW.EXAMPLE.COM/LOWER';
@@ -306,7 +306,7 @@ describe('Force URL Case', () => {
         forceCase: 'none',
       };
 
-      app.use(normy(options));
+      app.get('*', normy(options));
       app.get('/Path', (req, res) => {
         res.send('Success');
       });
@@ -332,7 +332,7 @@ describe('Force Query String Case', () => {
         forceCaseQuery: 'lower',
       };
 
-      app.use(normy(options));
+      app.get('*', normy(options));
 
       const appTest = vhost(app, 'www.example.com');
       const expected = 'http://www.example.com/path?qs=lowercase';
@@ -359,7 +359,7 @@ describe('Force Query String Case', () => {
         forceCaseQuery: 'upper',
       };
 
-      app.use(normy(options));
+      app.get('*', normy(options));
 
       const appTest = vhost(app, 'www.example.com');
       const expected = 'http://www.example.com/path?QS=UPPERCASE';
@@ -386,7 +386,7 @@ describe('Force Query String Case', () => {
         forceCase: 'none',
       };
 
-      app.use(normy(options));
+      app.get('*', normy(options));
       app.get('/path', (req, res) => {
         res.send('Success');
       });
@@ -411,7 +411,7 @@ describe('Redirect Types', () => {
       redirectType: '301',
     };
 
-    app.use(normy(options));
+    app.get('*', normy(options));
 
     const appTest = vhost(app, 'example.com');
     const expected = 'http://www.example.com/';
@@ -438,7 +438,7 @@ describe('Redirect Types', () => {
         redirectType: '302',
       };
 
-      app.use(normy(options));
+      app.get('*', normy(options));
 
       const appTest = vhost(app, 'example.com');
       const expected = 'http://www.example.com/';
@@ -464,7 +464,7 @@ describe('Multi-Option Tests', () => {
     done => {
       const app = express();
 
-      app.use(normy());
+      app.get('*', normy());
 
       const appTest = vhost(app, 'Example.com');
       const expected = 'http://www.example.com/path?Qs=Test&qs2=test';
@@ -496,7 +496,7 @@ describe('Multi-Option Tests', () => {
         redirectType: '302',
       };
 
-      app.use(normy(options));
+      app.get('*', normy(options));
 
       const appTest = vhost(app, 'www.example.com');
       const expected = 'HTTPS://EXAMPLE.COM/PATH/?qs=test&qs2=test';
