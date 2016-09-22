@@ -1,23 +1,7 @@
 const assert = require('chai').assert;
-const request = require('supertest');
+const vhost = require('./vhost');
 const express = require('express');
 const normy = require('../');
-
-// This will create a virtual hostname that unit tests can leverage when needed
-function createVhostTester(app, vhost) {
-  const real = request(app);
-  const proxy = {};
-
-  Object.keys(real).forEach((methodName) => {
-    proxy[methodName] = function () {
-      return real[methodName]
-            .apply(real, arguments)
-            .set('host', vhost);
-    };
-  });
-
-  return proxy;
-}
 
 describe('Force Protocol', () => {
   it('redirects to a https host name when request is not https AND "https" option is configured',
@@ -30,7 +14,7 @@ describe('Force Protocol', () => {
 
       app.use(normy(options));
 
-      const appTest = createVhostTester(app, 'www.example.com');
+      const appTest = vhost(app, 'www.example.com');
       const expected = 'https://www.example.com/';
 
       appTest
@@ -60,7 +44,7 @@ describe('Force Protocol', () => {
         res.send('Success');
       });
 
-      const appTest = createVhostTester(app, 'www.example.com');
+      const appTest = vhost(app, 'www.example.com');
 
       appTest
         .get('/path')
@@ -84,7 +68,7 @@ describe('Force WWW Hostname', () => {
 
       app.use(normy(options));
 
-      const appTest = createVhostTester(app, 'example.com');
+      const appTest = vhost(app, 'example.com');
       const expected = 'http://www.example.com/path';
 
       appTest
@@ -111,7 +95,7 @@ describe('Force WWW Hostname', () => {
 
       app.use(normy(options));
 
-      const appTest = createVhostTester(app, 'www.example.com');
+      const appTest = vhost(app, 'www.example.com');
       const expected = 'http://example.com/path';
 
       appTest
@@ -141,7 +125,7 @@ describe('Force WWW Hostname', () => {
         res.send('Success');
       });
 
-      const appTest = createVhostTester(app, 'example.com');
+      const appTest = vhost(app, 'example.com');
 
       appTest
         .get('/path')
@@ -165,7 +149,7 @@ describe('Force Trailing Slash in Path', () => {
 
       app.use(normy(options));
 
-      const appTest = createVhostTester(app, 'www.example.com');
+      const appTest = vhost(app, 'www.example.com');
       const expected = 'http://www.example.com/path';
 
       appTest
@@ -192,7 +176,7 @@ describe('Force Trailing Slash in Path', () => {
 
       app.use(normy(options));
 
-      const appTest = createVhostTester(app, 'www.example.com');
+      const appTest = vhost(app, 'www.example.com');
       const expected = 'http://www.example.com/path/';
 
       appTest
@@ -222,7 +206,7 @@ describe('Force Trailing Slash in Path', () => {
         res.send('Success');
       });
 
-      const appTest = createVhostTester(app, 'www.example.com');
+      const appTest = vhost(app, 'www.example.com');
 
       appTest
         .get('/path/')
@@ -246,7 +230,7 @@ describe('Force Trailing Slash in Path', () => {
       res.send('Success');
     });
 
-    const appTest = createVhostTester(app, 'www.example.com');
+    const appTest = vhost(app, 'www.example.com');
 
     appTest
       .get('/path.html')
@@ -270,7 +254,7 @@ describe('Force URL Case', () => {
 
       app.use(normy(options));
 
-      const appTest = createVhostTester(app, 'WWW.Example.COM');
+      const appTest = vhost(app, 'WWW.Example.COM');
       const expected = 'http://www.example.com/upper';
 
       appTest
@@ -297,7 +281,7 @@ describe('Force URL Case', () => {
 
       app.use(normy(options));
 
-      const appTest = createVhostTester(app, 'www.Example.com');
+      const appTest = vhost(app, 'www.Example.com');
       const expected = 'HTTP://WWW.EXAMPLE.COM/LOWER';
 
       appTest
@@ -327,7 +311,7 @@ describe('Force URL Case', () => {
         res.send('Success');
       });
 
-      const appTest = createVhostTester(app, 'Www.Example.com');
+      const appTest = vhost(app, 'Www.Example.com');
 
       appTest
         .get('/Path')
@@ -350,7 +334,7 @@ describe('Force Query String Case', () => {
 
       app.use(normy(options));
 
-      const appTest = createVhostTester(app, 'www.example.com');
+      const appTest = vhost(app, 'www.example.com');
       const expected = 'http://www.example.com/path?qs=lowercase';
 
       appTest
@@ -377,7 +361,7 @@ describe('Force Query String Case', () => {
 
       app.use(normy(options));
 
-      const appTest = createVhostTester(app, 'www.example.com');
+      const appTest = vhost(app, 'www.example.com');
       const expected = 'http://www.example.com/path?QS=UPPERCASE';
 
       appTest
@@ -407,7 +391,7 @@ describe('Force Query String Case', () => {
         res.send('Success');
       });
 
-      const appTest = createVhostTester(app, 'www.example.com');
+      const appTest = vhost(app, 'www.example.com');
 
       appTest
         .get('/path?Qs=AnyCase')
@@ -429,7 +413,7 @@ describe('Redirect Types', () => {
 
     app.use(normy(options));
 
-    const appTest = createVhostTester(app, 'example.com');
+    const appTest = vhost(app, 'example.com');
     const expected = 'http://www.example.com/';
 
     appTest
@@ -456,7 +440,7 @@ describe('Redirect Types', () => {
 
       app.use(normy(options));
 
-      const appTest = createVhostTester(app, 'example.com');
+      const appTest = vhost(app, 'example.com');
       const expected = 'http://www.example.com/';
 
       appTest
@@ -482,7 +466,7 @@ describe('Multi-Option Tests', () => {
 
       app.use(normy());
 
-      const appTest = createVhostTester(app, 'Example.com');
+      const appTest = vhost(app, 'Example.com');
       const expected = 'http://www.example.com/path?Qs=Test&qs2=test';
 
       appTest
@@ -514,7 +498,7 @@ describe('Multi-Option Tests', () => {
 
       app.use(normy(options));
 
-      const appTest = createVhostTester(app, 'www.example.com');
+      const appTest = vhost(app, 'www.example.com');
       const expected = 'HTTPS://EXAMPLE.COM/PATH/?qs=test&qs2=test';
 
       appTest
