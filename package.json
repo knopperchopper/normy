@@ -1,11 +1,11 @@
 {
   "name": "normy",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Normy is a Node.js middleware that normalizes and redirects URLs for SEO purposes.",
   "main": "index.js",
   "scripts": {
     "pretest": "npm install",
-    "test": "mocha -R spec ./test.js"
+    "test": "mocha -R spec --use_strict ./test/test.js"
   },
   "keywords": [
     "url",
@@ -22,6 +22,11 @@
   "license": "MIT",
   "devDependencies": {
     "chai": "^3.5.0",
+    "eslint": "^3.3.1",
+    "eslint-config-airbnb": "^10.0.1",
+    "eslint-plugin-import": "^1.13.0",
+    "eslint-plugin-jsx-a11y": "^2.1.0",
+    "eslint-plugin-react": "^6.1.2",
     "express": "^4.14.0",
     "mocha": "^2.5.3",
     "supertest": "^2.0.0"
