@@ -28,6 +28,7 @@ npm install --save normy
       redirectType: "301"    
     }
     
+    // Middleware for all GET routes
     app.get('*', normy(options));
 
 ```

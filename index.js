@@ -1,3 +1,5 @@
+'use strict';
+
 const Validator = require('jsonschema').Validator;
 
 // Init default options
@@ -68,6 +70,9 @@ module.exports = options => {
   // Setup Options: if undefined, use defaults, otherwise pass to option handler
   const opts = (options === undefined ? defaults : setupOptions(options));
 
+  /* eslint consistent-return: "off" */
+
+  // Process Request and Redirect
   return (req, res, next) => {
     // Break down request URL into components
     let urlProtocol = req.protocol;
@@ -156,8 +161,8 @@ module.exports = options => {
     if (redirectRequired) {
       const compiledUrl = `${urlProtocol}://${urlHost}${urlPath}${urlQueryString}`;
       res.redirect(statusCode, compiledUrl);
+    } else {
+      return next();
     }
-
-    return next();
   };
 };
