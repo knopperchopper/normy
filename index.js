@@ -10,6 +10,7 @@ const defaults = {
   forceCase: 'lower',
   forceCaseQuery: 'none',
   redirectType: '301',
+  excludedPaths: [],
 };
 
 // Define Options schema for validation
@@ -35,6 +36,13 @@ const optionsSchema = {
     redirectType: {
       enum: ['301', '302'],
     },
+    excludedPaths: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+      uniqueItems: true,
+    },
   },
 };
 
@@ -58,6 +66,8 @@ function setupOptions(options) {
     defaults.forceCaseQuery : opts.forceCaseQuery);
   opts.redirectType = (opts.redirectType === undefined ?
     defaults.redirectType : opts.redirectType);
+  opts.excludedPaths = (opts.excludedPaths === undefined ?
+    defaults.excludedPaths : opts.excludedPaths);
 
   // Validate options against schema
   validator.validate(opts, optionsSchema, { throwError: true });
@@ -82,6 +92,14 @@ module.exports = options => {
     let urlQueryString = (queryString === undefined ? '' : `?${queryString}`);
     let redirectRequired = false;
     const statusCode = parseInt(opts.redirectType, 10);
+
+    // Check to see if path should be excluded from normalization
+    for (const path of opts.excludedPaths) {
+      const pattern = new RegExp(path);
+      if (pattern.test(urlPath)) {
+        return next();
+      }
+    }
 
     // Force HTTP or HTTPS
     if (opts.forceProtocol === 'http') {

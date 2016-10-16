@@ -20,12 +20,13 @@ npm install --save normy
     const normy = require('normy');
     
     const options = {
-      forceProtocol: "none",
-      forceWww: "www",
-      forceTrailingSlash: "trim",
-      forceCase: "lower",
-      forceCaseQuery: "none",
-      redirectType: "301"    
+      forceProtocol: 'none',
+      forceWww: 'www',
+      forceTrailingSlash: 'trim',
+      forceCase: 'lower',
+      forceCaseQuery: 'none',
+      redirectType: '301',
+      excludedPaths: ['/MyPath', '/MySecondPath', '^MyRegEx'],
     }
     
     // Middleware for all GET routes
@@ -43,6 +44,7 @@ npm install --save normy
 | forceCase             | no       | lower, upper, none    | lower   | Force URL protocol, host name and path to lower or upper case |
 | forceCaseQuery        | no       | lower, upper, none    | none    | Force query string to lower or upper case.  **Use with caution** |
 | redirectType          | no       | 301, 302              | 301     | Redirect type if requesting URL needs it |
+| excludedPaths         | no       | [string1, string2..]  | []      | Exclude paths from rules.  Array of RegEx strings |
 
 
 ## Test
