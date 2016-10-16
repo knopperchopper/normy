@@ -458,6 +458,107 @@ describe('Redirect Types', () => {
     });
 });
 
+describe('Path Exclusion Tests', () => {
+  it('checks a positive match hardcoded path',
+    done => {
+      const app = express();
+
+      const options = {
+        excludedPaths: ['/TEST'],
+      };
+
+      app.get('*', normy(options));
+
+      app.get('/TEST', (req, res) => {
+        res.send('Hello');
+      });
+
+      const appTest = vhost(app, 'Example.com');
+
+      appTest
+        .get('/TEST')
+        .expect(200)
+        .end(err => {
+          if (err) return done(err);
+          return done();
+        });
+    });
+
+  it('checks a negative match hardcoded path',
+    done => {
+      const app = express();
+
+      const options = {
+        excludedPaths: ['/TEST'],
+      };
+
+      app.get('*', normy(options));
+
+      app.get('/TEST', (req, res) => {
+        res.send('Hello');
+      });
+
+      const appTest = vhost(app, 'Example.com');
+
+      appTest
+        .get('/nonmatch')
+        .expect(301)
+        .end(err => {
+          if (err) return done(err);
+          return done();
+        });
+    });
+
+  it('checks a positive match in a list of paths',
+    done => {
+      const app = express();
+
+      const options = {
+        excludedPaths: ['/TEST', '/TEST2', '/TEST3'],
+      };
+
+      app.get('*', normy(options));
+
+      app.get('/TEST2', (req, res) => {
+        res.send('Hello');
+      });
+
+      const appTest = vhost(app, 'Example.com');
+
+      appTest
+        .get('/TEST2')
+        .expect(200)
+        .end(err => {
+          if (err) return done(err);
+          return done();
+        });
+    });
+
+  it('checks a positive match in a wildcard path',
+    done => {
+      const app = express();
+
+      const options = {
+        excludedPaths: ['.TEST.'],
+      };
+
+      app.get('*', normy(options));
+
+      app.get('/myTESTpath/', (req, res) => {
+        res.send('Hello');
+      });
+
+      const appTest = vhost(app, 'Example.com');
+
+      appTest
+        .get('/myTESTpath/')
+        .expect(200)
+        .end(err => {
+          if (err) return done(err);
+          return done();
+        });
+    });
+});
 
 describe('Multi-Option Tests', () => {
   it('tests all of the default configurations',
@@ -494,6 +595,7 @@ describe('Multi-Option Tests', () => {
         forceCase: 'upper',
         forceCaseQuery: 'lower',
         redirectType: '302',
+        excludedPaths: ['.PATH.'],
       };
 
       app.get('*', normy(options));
